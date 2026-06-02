@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+
 import '../constants/app_colors.dart';
 
 class AppTheme {
-  AppTheme._(); // Private constructor to prevent instantiation
-
+  AppTheme._();
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,

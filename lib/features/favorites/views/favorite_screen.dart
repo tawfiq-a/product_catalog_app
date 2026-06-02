@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
-import '../controller/favorites_controller.dart';
+import '../../../core/utils/responsive.dart';
 import '../../products/widgets/product_card.dart';
+import '../controller/favorites_controller.dart';
 
 class FavoriteScreen extends HookConsumerWidget {
   const FavoriteScreen({super.key});
@@ -12,6 +13,10 @@ class FavoriteScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final favoriteProducts = ref.watch(favoritesProvider);
+
+    final crossAxisCount = Responsive.gridCrossAxisCount(context);
+    final childAspectRatio = Responsive.gridChildAspectRatio(context);
+    final hPadding = Responsive.horizontalPadding(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -25,39 +30,51 @@ class FavoriteScreen extends HookConsumerWidget {
       ),
       body: favoriteProducts.isEmpty
           ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.favorite_outline_rounded,
-                    size: 64,
-                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No favorites yet',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onSurfaceVariant,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: hPadding),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.favorite_outline_rounded,
+                      size: Responsive.value(
+                        context,
+                        mobile: 64.0,
+                        tablet: 80.0,
+                      ),
+                      color: theme.colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.5,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Tap the heart icon on any product to save it here.',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No favorites yet',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    Text(
+                      'Tap the heart icon on any product to save it here.',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.7,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             )
           : GridView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
+              padding: EdgeInsets.symmetric(horizontal: hPadding, vertical: 12),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
                 crossAxisSpacing: 14,
                 mainAxisSpacing: 14,
-                childAspectRatio: 0.63,
+                childAspectRatio: childAspectRatio,
               ),
               itemCount: favoriteProducts.length,
               itemBuilder: (context, index) {

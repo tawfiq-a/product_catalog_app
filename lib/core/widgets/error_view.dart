@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../network/api_exception.dart';
+import '../utils/responsive.dart';
 
 class ErrorView extends StatelessWidget {
   final Object error;
@@ -37,11 +38,15 @@ class ErrorView extends StatelessWidget {
     final icon = isNetwork ? Icons.wifi_off_rounded : Icons.error_outline_rounded;
 
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: Responsive.maxContentWidth(context),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(Responsive.contentPadding(context)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -90,6 +95,7 @@ class ErrorView extends StatelessWidget {
               onPressed: onRetry,
             ),
           ],
+          ),
         ),
       ),
     );

@@ -29,7 +29,6 @@ class SettingsScreen extends HookConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Styled visual indicator for theme mode
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 300),
               transitionBuilder: (Widget child, Animation<double> animation) {
@@ -51,24 +50,14 @@ class SettingsScreen extends HookConsumerWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 12),
-            Text(
-              'Switch between light and dark themes for a customized viewing experience.',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
-            ),
+
             const SizedBox(height: 40),
 
-            // Premium styled single Toggle Switch Card
             Card(
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
-                side: BorderSide(
-                  color: theme.colorScheme.outlineVariant,
-                ),
+                side: BorderSide(color: theme.colorScheme.outlineVariant),
               ),
               child: SwitchListTile(
                 value: isDarkMode,
@@ -77,12 +66,9 @@ class SettingsScreen extends HookConsumerWidget {
                 },
                 title: const Text(
                   'Dark Mode',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
-                subtitle: const Text('Toggle the application theme color'),
+
                 secondary: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -92,7 +78,9 @@ class SettingsScreen extends HookConsumerWidget {
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    isDarkMode ? Icons.nightlight_round : Icons.wb_sunny_rounded,
+                    isDarkMode
+                        ? Icons.nightlight_round
+                        : Icons.wb_sunny_rounded,
                     color: isDarkMode
                         ? theme.colorScheme.primary
                         : AppColors.starGold,

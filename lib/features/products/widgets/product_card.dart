@@ -111,7 +111,6 @@ class ProductCard extends HookConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Title
                     Text(
                       product.title,
                       maxLines: 1,
