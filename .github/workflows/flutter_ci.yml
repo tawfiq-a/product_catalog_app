@@ -1,115 +1,78 @@
-name: Flutter CI
+name: Build APK and Release
 
 on:
   push:
-    branches: [main, master, dev]
-    tags: ["v*"]
-  pull_request:
-    branches: [main, master, dev]
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
-  analyze:
-    name: Dart/Flutter analyze
+  build-release-apk:
+    name: Build release APK
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Flutter
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          cache: true
 
-      - name: Cache Dart packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.pub-cache
-          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-
-
-      - name: Get dependencies
+      - name: Install dependencies
         run: flutter pub get
 
-      - name: Analyze
+      - name: Generate source files
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Analyze project
         run: flutter analyze
 
-  build_android:
-    name: Build Android APK
-    needs: analyze
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-
-      - name: Cache Dart packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.pub-cache
-          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-
-
-      - name: Get dependencies
-        run: flutter pub get
-
-      - name: Build debug APK
-        run: flutter build apk --debug
-
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
-
-  release:
-    name: Create GitHub Release
-    needs: build_android
-    if: needs.build_android.result == 'success' && (startsWith(github.ref, 'refs/tags/v') || ((github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && contains(github.event.head_commit.message, 'Merge pull request')))
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Download APK artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: app-debug-apk
-          path: release-artifacts
-
-      - name: Determine release tag
-        id: tag
+      - name: Run tests
         run: |
-          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            echo "tag_name=${GITHUB_REF##refs/tags/}" >> $GITHUB_OUTPUT
+          if [ -d test ]; then
+            flutter test
           else
-            echo "tag_name=v${GITHUB_RUN_NUMBER}" >> $GITHUB_OUTPUT
+            echo "No test directory found; skipping tests."
           fi
 
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.tag.outputs.tag_name }}
-          release_name: Release ${{ steps.tag.outputs.tag_name }}
-          draft: false
-          prerelease: false
+      - name: Build APK
+        run: flutter build apk --release
 
-      - name: Upload APK to release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Prepare release metadata
+        id: release
+        run: |
+          app_version="$(awk '/^version: / { print $2 }' pubspec.yaml)"
+          branch_name="${GITHUB_REF_NAME//\//-}"
+          tag_name="apk-${branch_name}-v${app_version}-${GITHUB_RUN_NUMBER}"
+          apk_name="product-catalog-app-v${app_version}-${branch_name}.apk"
+
+          cp build/app/outputs/flutter-apk/app-release.apk "${apk_name}"
+
+          {
+            echo "app_version=${app_version}"
+            echo "tag_name=${tag_name}"
+            echo "apk_name=${apk_name}"
+          } >> "${GITHUB_OUTPUT}"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: release-artifacts/build/app/outputs/flutter-apk/app-debug.apk
-          asset_name: app-debug.apk
-          asset_content_type: application/vnd.android.package-archive
+          tag_name: ${{ steps.release.outputs.tag_name }}
+          name: Product Catalog App ${{ steps.release.outputs.app_version }}
+          body: |
+            Automated APK release for `${{ github.ref_name }}`.
+
+            Commit: ${{ github.sha }}
+          files: ${{ steps.release.outputs.apk_name }}
