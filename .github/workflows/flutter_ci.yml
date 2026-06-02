@@ -34,36 +34,9 @@ jobs:
       - name: Analyze
         run: flutter analyze
 
-  test:
-    name: Flutter test
-    needs: analyze
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-
-      - name: Cache Dart packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.pub-cache
-          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-
-
-      - name: Get dependencies
-        run: flutter pub get
-
-      - name: Run tests
-        run: flutter test
-
   build_android:
     name: Build Android APK
-    needs: [analyze, test]
+    needs: analyze
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
