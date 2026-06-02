@@ -1,13 +1,14 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import '../../../core/storage/hive_service.dart';
+
 import '../../../models/product_model.dart';
+import '../repository/favorites_repository.dart';
 
 class FavoritesNotifier extends Notifier<List<ProductModel>> {
-  final _hiveService = HiveService();
+  final _repository = FavoritesRepository();
 
   @override
   List<ProductModel> build() {
-    return _hiveService.getFavoriteProducts();
+    return _repository.getFavoriteProducts();
   }
 
   void toggleFavorite(ProductModel product) {
@@ -15,10 +16,10 @@ class FavoritesNotifier extends Notifier<List<ProductModel>> {
     final index = list.indexWhere((p) => p.id == product.id);
     if (index != -1) {
       list.removeAt(index);
-      _hiveService.removeFavoriteProduct(product.id);
+      _repository.removeFavoriteProduct(product.id);
     } else {
       list.add(product);
-      _hiveService.saveFavoriteProduct(product);
+      _repository.saveFavoriteProduct(product);
     }
     state = list;
   }
@@ -28,6 +29,7 @@ class FavoritesNotifier extends Notifier<List<ProductModel>> {
   }
 }
 
-final favoritesProvider = NotifierProvider<FavoritesNotifier, List<ProductModel>>(
-  FavoritesNotifier.new,
-);
+final favoritesProvider =
+    NotifierProvider<FavoritesNotifier, List<ProductModel>>(
+      FavoritesNotifier.new,
+    );

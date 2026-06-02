@@ -23,7 +23,7 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'Fake Store',
+      title: 'Product Catalog App',
       themeMode: themeMode,
       routerConfig: AppRoutes.router,
       theme: AppTheme.lightTheme,

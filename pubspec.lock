@@ -215,7 +215,7 @@ packages:
     source: hosted
     version: "6.0.0"
   flutter_riverpod:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_riverpod
       sha256: "4e166be88e1dbbaa34a280bdb744aeae73b7ef25fdf8db7a3bb776760a3648e2"
@@ -240,22 +240,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.0"
-  gap:
-    dependency: "direct main"
-    description:
-      name: gap
-      sha256: f19387d4e32f849394758b91377f9153a1b41d79513ef7668c088c77dbc6955d
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.1"
-  get_it:
-    dependency: transitive
-    description:
-      name: get_it
-      sha256: "568d62f0e68666fb5d95519743b3c24a34c7f19d834b0658c46e26d778461f66"
-      url: "https://pub.dev"
-    source: hosted
-    version: "9.2.1"
   glob:
     dependency: transitive
     description:
@@ -328,22 +312,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
-  injectable:
-    dependency: "direct main"
-    description:
-      name: injectable
-      sha256: "1da6399509e44ddb0d8a4a35291d7122c4efb5c625a9d733bf5e48d4a72e379e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.0"
-  intl:
-    dependency: "direct main"
-    description:
-      name: intl
-      sha256: "3df61194eb431efc39c4ceba583b95633a403f46c9fd341e550ce0bfa50e9aa5"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.20.2"
   io:
     dependency: transitive
     description:
@@ -400,14 +368,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.0"
-  logarte:
-    dependency: "direct main"
-    description:
-      name: logarte
-      sha256: ff01d102561b2b50122a7229c4507bf626cba9fd34609f77632e02d73ea4470a
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.4.1"
   logging:
     dependency: transitive
     description:
@@ -584,14 +544,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.1"
-  riverpod_annotation:
-    dependency: "direct main"
-    description:
-      name: riverpod_annotation
-      sha256: "16471a1260b94e939394d78f1c63a9350936ac4a68c9fbdab40be47268c0b04f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.0.2"
   rxdart:
     dependency: transitive
     description:
@@ -781,14 +733,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.16"
-  timeago:
-    dependency: "direct main"
-    description:
-      name: timeago
-      sha256: b05159406a97e1cbb2b9ee4faa9fb096fe0e2dfcd8b08fcd2a00553450d3422e
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.7.1"
   typed_data:
     dependency: transitive
     description:
