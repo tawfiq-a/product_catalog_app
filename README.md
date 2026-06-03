@@ -75,7 +75,5 @@ git push origin v1.0.0
 
 Automatic releases are also created for pushes to `main`/`master` per the workflow configuration.
 
-## Notes & Next Steps
 
-- If you want the README in Bangla (Bengali) or additional sections (contributing, tests, architecture diagrams), tell me which to add.
 
