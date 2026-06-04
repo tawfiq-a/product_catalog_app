@@ -18,7 +18,6 @@ class ApiService {
             .map((e) => ProductModel.fromJson(Map<String, dynamic>.from(e)))
             .toList();
       }
-      // sometimes APIs return as JSON string
       if (data is String) {
         final decoded = jsonDecode(data) as List<dynamic>;
         return decoded
