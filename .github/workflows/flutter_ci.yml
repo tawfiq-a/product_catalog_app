@@ -1,0 +1,75 @@
+name: Build APK and Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-release-apk:
+    name: Build release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze project
+        run: flutter analyze
+
+      - name: Run tests
+        run: |
+          if [ -d test ]; then
+            flutter test
+          else
+            echo "No test directory found; skipping tests."
+          fi
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Prepare release metadata
+        id: release
+        run: |
+          app_version="$(awk '/^version: / { print $2 }' pubspec.yaml)"
+          branch_name="${GITHUB_REF_NAME//\//-}"
+          tag_name="apk-${branch_name}-v${app_version}-${GITHUB_RUN_NUMBER}"
+          apk_name="product-catalog-app-v${app_version}-${branch_name}.apk"
+
+          cp build/app/outputs/flutter-apk/app-release.apk "${apk_name}"
+
+          {
+            echo "app_version=${app_version}"
+            echo "tag_name=${tag_name}"
+            echo "apk_name=${apk_name}"
+          } >> "${GITHUB_OUTPUT}"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release.outputs.tag_name }}
+          name: Product Catalog App ${{ steps.release.outputs.app_version }}
+          body: |
+            Automated APK release for `${{ github.ref_name }}`.
+
+            Commit: ${{ github.sha }}
+          files: ${{ steps.release.outputs.apk_name }}
